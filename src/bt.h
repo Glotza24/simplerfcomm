@@ -124,17 +124,6 @@ private:
     std::map<QDBusObjectPath, BtDevice> m_devices;
 };
 
-class DbusAsyncCallException : public std::runtime_error
-{
-public:
-    DbusAsyncCallException(const QDBusError &error) : std::runtime_error("DBus async call failed"), m_error(error)
-    {
-    }
-
-private:
-    QDBusError m_error;
-};
-
 class Bluetooth : public BluetoothInterface
 {
 public:
@@ -184,17 +173,11 @@ private:
                                                                                                                      {
             watcher->deleteLater();
             if (watcher->isError()) {
-                throw   DbusAsyncCallException(watcher->error());
+                qDebug() << "Failed to register agent:" << watcher->error().message();
             }
-            return watcher->reply(); })
-                          .then([](const QDBusMessage &reply)
-                                {
-                // Agent registered successfully
-                qDebug() << "Agent registered successfully"; })
-                          .onFailed([](const DbusAsyncCallException &e)
-                                    {
-                // Failed to register agent
-                qDebug() << "Failed to register agent:" << e.what(); });
+            else {
+                qDebug() << "Agent registered successfully";
+            } });
     }
 
     OrgBluezAgentManager1Interface m_agentManagerInterface;
