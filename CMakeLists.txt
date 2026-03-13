@@ -1,20 +1,23 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(btapp)
+project(simplerfcomm)
 
 find_package(Qt6 REQUIRED COMPONENTS DBus)
 
-qt_add_dbus_adaptor(BLUEZAGENT_ADAPTOR_SRC res/org.bluez.Agent1.xml bluezagent.h BluezAgent bluezagentadaptor BluezAgentAdaptor)
-qt_add_dbus_interface(BLUEZMANAGER_INTERFACE_SRC res/org.bluez.AgentManager1.xml bluezagentmanager)
-qt_add_dbus_interface(BLUEZADAPTER_INTERFACE_SRC res/org.bluez.Adapter1.xml bluezadapter)
+qt_standard_project_setup()
 
+qt_add_dbus_adaptor(DBUS_SRCS res/org.bluez.Agent1.xml bluezagent.h BluezAgent bluezagentadaptor BluezAgentAdaptor)
+qt_add_dbus_interface(DBUS_SRCS res/org.bluez.AgentManager1.xml bluezagentmanager)
+qt_add_dbus_interface(DBUS_SRCS res/org.bluez.Adapter1.xml bluezadapter)
+qt_add_dbus_interface(DBUS_SRCS res/org.freedesktop.DBus.Properties.xml dbusproperties)
+
+set_source_files_properties(res/org.freedesktop.DBus.ObjectManager.xml PROPERTIES INCLUDE "bluezqt_dbustypes.h")
+qt_add_dbus_interface(DBUS_SRCS res/org.freedesktop.DBus.ObjectManager.xml bluezobjectmanager)
 
 set(SOURCES
     src/bt.cpp
     src/main.cpp
-    ${BLUEZMANAGER_INTERFACE_SRC}
-    ${BLUEZADAPTER_INTERFACE_SRC}
-    ${BLUEZAGENT_ADAPTOR_SRC}
+    ${DBUS_SRCS}
 )
 
 add_executable(simplerfcomm ${SOURCES})

@@ -3,6 +3,8 @@
 #include "bt.h"
 
 int main(int argc, char *argv[]) {
+    RegisterMetaTypes();
+
     Bluetooth bt;
     bt.Enable();
 
